@@ -14,8 +14,8 @@ R(ξ¹; r1 = r1, r2 = r2) = (r2 - r1) * (ξ¹ + 1) / 2 + r1
 Θ(ξ²; θ1 = π / 2 - φ, θ2 = π / 2 + φ) = (θ2 - θ1) * (ξ² + 1) / 2 + θ1
 
 # annulus to cartesian mappings
-xc(r, θ) = r * cos(θ)
-yc(r, θ) = r * sin(θ)
+x_mapping(r, θ) = r * cos(θ)
+y_mapping(r, θ) = r * sin(θ)
 
 # Now construct the discretization
 # Construct Gauss-Lobatto points
@@ -41,8 +41,8 @@ dξp = [(j - 1) * vec[i]^(j - 2) for i in 1:length(vec), j in 1:length(vec)]
 rvec = R.(ξ1vec)
 θvec = Θ.(ξ2vec)
 # convert to cartesian
-x_positions = [xc(r, θ) for r in rvec, θ in θvec]
-y_positions = [yc(r, θ) for r in rvec, θ in θvec]
+x_positions = [x_mapping(r, θ) for r in rvec, θ in θvec]
+y_positions = [y_mapping(r, θ) for r in rvec, θ in θvec]
 
 # Now do the discrete Calculus
 ∂x∂ξ¹ = copy(x_positions)

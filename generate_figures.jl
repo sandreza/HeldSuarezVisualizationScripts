@@ -23,3 +23,9 @@ save(figure_directory * "surface_fields.png", fig)
 
 include("held_suarez_3d_snapshots.jl")
 save(figure_directory * "vertical_velocity.png", fig)
+
+include("annulus_plot.jl")
+save(figure_directory * "annulus_and_gridpoints.png", fig)
+
+include("cubed_sphere_warp.jl")
+save(figure_directory * "cubed_sphere.png", fig)
