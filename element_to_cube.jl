@@ -275,6 +275,7 @@ for c in 1:3, s in 1:3, i in 1:L, j in 1:M, k in 1:N
 end
 
 chol_sub = cholesky((inc_sub' * inc_sub)) # this is just the identity matrix
+# nullspace yields thing that are already orthonormalized (apparantely)
 for c in 1:3
     flattened_tmp = tmp[:, :, :, c, :][:]
     projected_tmp = inc_sub * (chol_sub \ (inc_sub' * flattened_tmp))
@@ -308,5 +309,5 @@ println("Projection free-stream yields ", norm(err1, Inf))
 println("Projection free-stream yields ", norm(err2, Inf))
 println("Projection free-stream yields ", norm(err3, Inf))
 
-P = inc_sub * inc_sub'# this is indeed a projection operator, eigvals = {1, 0}
-λP = eigvals(P)
+# P = inc_sub * inc_sub'# this is indeed a projection operator, eigvals = {1, 0}
+# λP = eigvals(P)
