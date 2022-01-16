@@ -39,7 +39,7 @@ function cuby_sphere(ξ¹, ξ², ξ³; radii = nothing, rectangle = nothing, fac
     return nothing
 end
 
-N = 4
+N = 6
 ξ¹, ω¹ = GaussQuadrature.legendre(N, GaussQuadrature.both)
 ξ² = copy(ξ¹)
 ξ³ = copy(ξ¹)
@@ -288,14 +288,25 @@ end
 aftertmp[index..., :, :,]
 kopriva[:, :, index...]
 detjacobian[index...] .* ijacobian[:, :, index...]'
-
+# orthogonal project should be closer to where we start
 norm(aftertmp[index..., :, :]' - detjacobian[index...] .* ijacobian[:, :, index...])
 norm(kopriva[:, :, index...]' - detjacobian[index...] .* ijacobian[:, :, index...])
-div * (ktmp[:, :, :, 1, :][:])
-div * (ktmp[:, :, :, 2, :][:])
-div * (ktmp[:, :, :, 3, :][:])
+kerr1 = div * (ktmp[:, :, :, 1, :][:])
+kerr2 = div * (ktmp[:, :, :, 2, :][:])
+kerr3 = div * (ktmp[:, :, :, 3, :][:])
 
-div * (aftertmp[:, :, :, 1, :][:])
-div * (aftertmp[:, :, :, 2, :][:])
-div * (aftertmp[:, :, :, 3, :][:])
+println("Kopriva free-stream yields ", norm(kerr1, Inf))
+println("Kopriva free-stream yields ", norm(kerr2, Inf))
+println("Kopriva free-stream yields ", norm(kerr3, Inf))
 
+
+err1 = div * (aftertmp[:, :, :, 1, :][:])
+err2 = div * (aftertmp[:, :, :, 2, :][:])
+err3 = div * (aftertmp[:, :, :, 3, :][:])
+
+println("Projection free-stream yields ", norm(err1, Inf))
+println("Projection free-stream yields ", norm(err2, Inf))
+println("Projection free-stream yields ", norm(err3, Inf))
+
+P = inc_sub * inc_sub'# this is indeed a projection operator, eigvals = {1, 0}
+λP = eigvals(P)
