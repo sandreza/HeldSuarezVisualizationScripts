@@ -39,7 +39,7 @@ function cuby_sphere(ξ¹, ξ², ξ³; radii = nothing, rectangle = nothing, fac
     return nothing
 end
 
-N = 12
+N = 4
 ξ¹, ω¹ = GaussQuadrature.legendre(N, GaussQuadrature.both)
 ξ² = copy(ξ¹)
 ξ³ = copy(ξ¹)
@@ -245,3 +245,57 @@ kopriva[:, :, index...]
 # Jacobian inflation
 inflation_factor = det(kopriva[:, :, index...] ./ detjacobian[index...]) * detjacobian[index...]
 println("The jacobian has inflated by a factor, ", inflation_factor)
+
+##
+# Could also construct metrics like this
+II = 0 * ∂ξ¹ + I
+tmp3 = kron(∂ξ¹, II, II)
+tmp2 = kron(II, ∂ξ¹, II)
+tmp1 = kron(II, II, ∂ξ¹)
+div = [tmp1 tmp2 tmp3]
+incompressible_subspace = nullspace(div)
+inc_sub = incompressible_subspace
+maximum(abs.(div * inc_sub))
+
+Fˣ = (ξ¹.+0*ξ².+0*ξ³)[:]
+Fʸ = (0*ξ¹.+1*ξ².+0*ξ³)[:]
+Fᶻ = (0*ξ¹.+0*ξ².+1*ξ³)[:]
+F⃗ = [Fˣ; Fʸ; Fᶻ]
+divF = div * F⃗
+all(divF .≈ 3.0)
+maximum(abs.(tmp3 * Fˣ))
+# need to project all throw
+tmp = zeros(L, M, N, 3, 3)
+ktmp = zeros(L, M, N, 3, 3)
+aftertmp = zeros(L, M, N, 3, 3)
+
+for c in 1:3, s in 1:3, i in 1:L, j in 1:M, k in 1:N
+    tmp[i, j, k, c, s] = detjacobian[i, j, k] * ijacobian[s, c, i, j, k]
+    ktmp[i, j, k, c, s] = kopriva[c, s, i, j, k]
+end
+
+chol_sub = cholesky((inc_sub' * inc_sub)) # this is just the identity matrix
+for c in 1:3
+    flattened_tmp = tmp[:, :, :, c, :][:]
+    projected_tmp = inc_sub * (chol_sub \ (inc_sub' * flattened_tmp))
+    vtmp = view(tmp, :, :, :, c, :)
+    vtmp[:] .= projected_tmp
+    for s in 1:3, i in 1:L, j in 1:M, k in 1:N
+        aftertmp[i, j, k, c, s] = vtmp[i, j, k, s]
+    end
+end
+
+aftertmp[index..., :, :,]
+kopriva[:, :, index...]
+detjacobian[index...] .* ijacobian[:, :, index...]'
+
+norm(aftertmp[index..., :, :]' - detjacobian[index...] .* ijacobian[:, :, index...])
+norm(kopriva[:, :, index...]' - detjacobian[index...] .* ijacobian[:, :, index...])
+div * (ktmp[:, :, :, 1, :][:])
+div * (ktmp[:, :, :, 2, :][:])
+div * (ktmp[:, :, :, 3, :][:])
+
+div * (aftertmp[:, :, :, 1, :][:])
+div * (aftertmp[:, :, :, 2, :][:])
+div * (aftertmp[:, :, :, 3, :][:])
+
