@@ -16,7 +16,7 @@ function cuby_sphere(ξ¹, ξ², ξ³; radii = nothing, rectangle = nothing, fac
     R = (ξ³ + 1) / 2 * (r² - r¹) + r¹
     η² = (ξ¹ + 1) / 2 * (bˣ - aˣ) + aˣ
     η³ = (ξ² + 1) / 2 * (bʸ - aʸ) + aʸ
-    facewarp(x) = tan(π / 4 * x) # x # asin(x) * 2/ π # tan(π/4 * x)
+    facewarp(x) = tan(π / 4 * x) # x # asin(x) * 2/ π # x + 1.0*sin(π *x) 
     ρ = sqrt(1 + facewarp(η²)^2 + facewarp(η³)^2)
     x¹ = R / ρ
     x² = R * facewarp(η²) / ρ
