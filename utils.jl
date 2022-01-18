@@ -153,7 +153,7 @@ function plot_helper(s_string, slice_zonal)
         latex_string = L"\langle u' u' \rangle"
     elseif s_string == "v'T'"
         contour_levels = collect(-21:3:21) # vT
-        latex_string = L"\langle u' T' \rangle"
+        latex_string = L"\langle v' T' \rangle"
     elseif s_string == "u'v'"
         contour_levels = collect(-30:10:30) # uv
         latex_string = L"\langle u' v' \rangle"
